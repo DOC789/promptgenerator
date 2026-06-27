@@ -78,6 +78,12 @@ background:#ff9800;
 color:white;
 }
 
+.btn-export{
+background:#2e7d32;
+color:white;
+margin-top:12px;
+}
+
 .btn-copy{
 background:#4caf50;
 color:white;
@@ -136,8 +142,6 @@ color:#777;
 
 <div class="container">
 
-<!-- LOGIN -->
-
 <div id="loginPage" class="card login-box">
 
 <h1>
@@ -159,8 +163,6 @@ Masuk
 </button>
 
 </div>
-
-<!-- GENERATOR -->
 
 <div id="generatorPage" class="hidden">
 
@@ -218,6 +220,11 @@ value="Merah dan Kuning Modern">
 <button class="btn-generate"
 onclick="generatePrompt()">
 Generate Prompt
+</button>
+
+<button class="btn-export"
+onclick="exportToHTML()">
+<i class="fa-solid fa-file-code"></i> Export ke HTML Siap Pakai
 </button>
 
 <button class="btn-copy"
@@ -401,6 +408,87 @@ ${tambahan}
 
 document.getElementById("hasil").innerText=hasil;
 
+}
+
+/* EXPORT TO HTML FUNCTION */
+function exportToHTML() {
+    let nama = document.getElementById("nama").value;
+    let logo = document.getElementById("logo").value;
+    let deskripsi = document.getElementById("deskripsi").value;
+    let wa = document.getElementById("wa").value;
+    let jenis = document.getElementById("jenis").value;
+    let warna = document.getElementById("warna").value;
+
+    if (nama === "" || deskripsi === "" || wa === "") {
+        alert("Lengkapi data terlebih dahulu sebelum melakukan export.");
+        return;
+    }
+
+    // Format link WhatsApp untuk user
+    let waUserLink = `https://wa.me/${wa}?text=Halo%20saya%20tertarik%20dengan%20produk%20di%20${encodeURIComponent(nama)}`;
+    
+    // Format link WhatsApp untuk CTA Jasa Online MMS Design
+    let waMMSLink = `https://wa.me/628993686867?text=Halo%20MMS%20Design,%20saya%20mau%20online-kan%20website%20saya:%20${encodeURIComponent(nama)}`;
+
+    // Template HTML Output yang bersih & modern menggunakan Tailwind CSS
+    let htmlContent = `<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${nama} - ${jenis}</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans antialiased min-h-screen flex flex-col justify-between">
+
+    <div class="max-w-2xl mx-auto px-4 py-12 text-center flex-grow flex flex-col justify-center">
+        <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100">
+            <img src="${logo}" alt="Logo ${nama}" class="mx-auto max-h-[120px] object-contain mb-6 rounded-xl">
+            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">${nama}</h1>
+            <span class="inline-block mt-2 px-4 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-600 tracking-wide uppercase">${jenis}</span>
+            <p class="mt-6 text-gray-600 leading-relaxed text-base">${deskripsi}</p>
+            
+            <div class="mt-4 p-3 bg-amber-50 rounded-xl text-xs text-amber-800 inline-block">
+                🎨 Konsep Desain: <strong>${warna}</strong>
+            </div>
+
+            <div class="mt-8">
+                <a href="${waUserLink}" target="_blank" class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-3.5 text-base font-bold text-white shadow-lg hover:bg-emerald-700 transition w-full transform hover:-translate-y-0.5">
+                    <i class="fa-brands fa-whatsapp text-xl"></i> Hubungi Kami via WhatsApp
+                </a>
+            </div>
+        </div>
+
+        <div class="mt-8 p-5 bg-gradient-to-r from-red-500 to-orange-500 rounded-2xl text-white shadow-md">
+            <p class="text-sm font-medium mb-3">🚀 Ingin website ini online dengan nama domain sendiri (.com / .biz.id)?</p>
+            <a href="${waMMSLink}" target="_blank" class="inline-flex items-center gap-2 bg-white text-orange-600 font-bold px-5 py-2 rounded-xl text-xs hover:bg-gray-100 transition shadow">
+                <i class="fa-solid fa-globe"></i> Online-kan Website Ini Sekarang!
+            </a>
+        </div>
+    </div>
+
+    <footer class="w-full text-center py-4 bg-gray-100 border-t border-gray-200 text-xs text-gray-500">
+        <p>© ${new Date().getFullYear()} ${nama}. All Rights Reserved. | Created by <a href="https://promptgeneratormms.vercel.app/" target="_blank" class="font-bold text-orange-600 hover:underline">MMS Design</a></p>
+    </footer>
+
+</body>
+</html>`.trim();
+
+    // Proses pembuatan file blob dan trigger download otomatis
+    let blob = new Blob([htmlContent], { type: "text/html" });
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement("a");
+    a.href = url;
+    
+    // Penamaan file otomatis mengikuti nama website yang diinput
+    let fileName = nama.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    a.download = `${fileName || "landing-page"}.html`;
+    
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
 /* COPY */
